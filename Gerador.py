@@ -47,7 +47,6 @@ def fields_iterator(record, field):
     tipo=field['type']
     if isinstance(tipo, list):
         tipo = pega_tipo_nao_nulo(tipo)
-    print(tipo)
     
     record[name]=gerador_por_tipo(tipo, field)
     return record
