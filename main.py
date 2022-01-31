@@ -9,7 +9,7 @@ schema = {
         {'name': 'field4', 'type': 'long'},
         {'name': 'field5', 'type': 'float'},
         {'name': 'field6', 'type': 'double'},
-      ##  {'name': 'field7', 'type': 'bytes'},
+        ##  {'name': 'field7', 'type': 'bytes'},
         {'name': 'field8', 'type': 'string'},
         {
             "type": "enum",
@@ -52,13 +52,19 @@ schema = {
             "type": "map",
             "name": "field13",
             "items": {
-                        'type': 'record',
+                'type': 'record',
                         'fields': [{'name': 'item_array', 'type': 'int'}, ]
-                      }
+            }
         }
     ],
 }
 
+user_value = {
+    "field10": [10],
+    "field12": {
+        "item_record2": "Goku"}}
+
+
 with open("teste.json", "+w") as file:
-  file.write(json.dumps(generateData(schema), indent=4))
+    file.write(json.dumps(generateData(schema, user_value=user_value), indent=4))
 print()

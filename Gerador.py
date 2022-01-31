@@ -51,7 +51,18 @@ def fields_iterator(record, field):
     record[name]=gerador_por_tipo(tipo, field)
     return record
 
-def generateData(avroSchema):
-    fields=avroSchema['fields']
+def merge_dicts(old_dict: dict, new_dict: dict):
+    for key, valeu in new_dict.items():
+        if key in old_dict and isinstance(old_dict[key], dict):
+            merge_dicts(old_dict[key], new_dict[key])
+        else:
+            old_dict[key] = new_dict[key]
+    
+    return old_dict
 
-    return reduce(fields_iterator, fields, {})
+def generateData(avroSchema, user_value={}):
+    fields=avroSchema['fields']
+    mock = reduce(fields_iterator, fields, {})
+    mock = merge_dicts(mock, user_value)
+
+    return mock
