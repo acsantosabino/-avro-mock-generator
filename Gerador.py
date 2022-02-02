@@ -23,15 +23,17 @@ default_tipo_generator = {
     'record': lambda field: generateData(field)
 }
 
+
 def pega_tipo_nao_nulo(tipos):
     return next(filter(lambda x: x != "null", tipos))
 
 
 def gerador_tipo_map(field):
-    if isinstance(field['items'], dict):
-        return dict([(lorem_key.sentence(), generateData(field['items'])) for i in range(3)])
+    if isinstance(field['values'], dict):
+        return dict([(lorem_key.sentence(), generateData(field['values'])) for i in range(3)])
     else:
-        return dict([(lorem_key.sentence(), gerador_por_tipo(field['items'])) for i in range(3)])
+        return dict([(lorem_key.sentence(), gerador_por_tipo(field['values'])) for i in range(3)])
+
 
 def gerador_tipo_array(field):
     if isinstance(field['items'], dict):
@@ -39,30 +41,25 @@ def gerador_tipo_array(field):
     else:
         return [gerador_por_tipo(field['items']) for i in range(3)]
 
+
 def gerador_por_tipo(tipo, field=None):
+    if isinstance(tipo, dict):
+        array_config = tipo['type']
+        return default_tipo_generator[array_config](tipo)
     return default_tipo_generator[tipo](field)
 
+
 def fields_iterator(record, field):
-    name=field['name']
-    tipo=field['type']
+    name = field['name']
+    tipo = field['type']
     if isinstance(tipo, list):
         tipo = pega_tipo_nao_nulo(tipo)
     
-    record[name]=gerador_por_tipo(tipo, field)
+    record[name] = gerador_por_tipo(tipo, field)
     return record
 
-def merge_dicts(old_dict: dict, new_dict: dict):
-    for key, valeu in new_dict.items():
-        if key in old_dict and isinstance(old_dict[key], dict):
-            merge_dicts(old_dict[key], new_dict[key])
-        else:
-            old_dict[key] = new_dict[key]
-    
-    return old_dict
 
-def generateData(avroSchema, user_value={}):
-    fields=avroSchema['fields']
-    mock = reduce(fields_iterator, fields, {})
-    mock = merge_dicts(mock, user_value)
+def generateData(avroSchema):
+    fields = avroSchema['fields']
 
-    return mock
+    return reduce(fields_iterator, fields, {})
